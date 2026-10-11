@@ -106,9 +106,9 @@ export interface ExamConfig {
   output?: {
     /** If set, the result JSON is POSTed here on submission. */
     postUrl?: string;
-    /** If true (default), the result is sent to window.parent via postMessage. */
+    /** If true (default), the result is posted to the host page that started the exam (popup / iframe embedding). */
     postMessage?: boolean;
-    /** If true (default), the result is persisted in localStorage under `tcs-clone-result:<examId>`. */
+    /** Persist the result in localStorage under `tcs-clone-result:<examId>`. Default: true standalone, false when hosted. */
     localStorage?: boolean;
   };
 }

@@ -8,6 +8,7 @@ import { InstructionsPage1, InstructionsPage2 } from './screens/Instructions';
 import { ExamPage } from './screens/ExamPage';
 import { Done } from './screens/Done';
 import { ExamPicker } from './screens/ExamPicker';
+import { MSG, hasHost, isEmbedded, sendToHost, waitForHostConfig } from './engine/host';
 
 export default function App() {
   const [cfg, setCfg] = useState<ExamConfig | null>(null);
@@ -15,13 +16,13 @@ export default function App() {
   const [booting, setBooting] = useState(true);
 
   useEffect(() => {
-    loadConfigFromEnvironment()
+    (isEmbedded() ? waitForHostConfig() : loadConfigFromEnvironment())
       .then(setCfg)
       .catch((e: Error) => setError(e.message))
       .finally(() => setBooting(false));
   }, []);
 
-  if (booting) return null;
+  if (booting) return isEmbedded() ? <div className="embed-wait">Connecting to exam host…</div> : null;
   if (error) return <pre style={{ padding: 20, color: '#b00', whiteSpace: 'pre-wrap' }}>{error}</pre>;
   if (!cfg) {
     return (
@@ -83,6 +84,17 @@ function Engine({ cfg }: { cfg: ExamConfig }) {
     return () => window.removeEventListener('beforeunload', h);
   }, [state.phase]);
 
+  // While hosted, stream a partial snapshot so the host keeps something if the window is closed early.
+  const latest = useRef(state);
+  latest.current = state;
+  useEffect(() => {
+    if (!hasHost() || state.phase !== 'exam') return;
+    const id = window.setInterval(() => {
+      if (latest.current.phase === 'exam') sendToHost(MSG.progress, { result: buildResult(cfg, latest.current) });
+    }, 10000);
+    return () => window.clearInterval(id);
+  }, [state.phase, cfg]);
+
   useEffect(() => {
     if (state.phase === 'done' && !delivered.current) {
       delivered.current = true;
@@ -110,6 +122,7 @@ function Engine({ cfg }: { cfg: ExamConfig }) {
         <Done
           cfg={cfg}
           result={result}
+          hosted={hasHost()}
           onRestart={() => {
             sessionStorage.removeItem(stateKey(cfg.id));
             location.reload();

@@ -1,6 +1,7 @@
 import type { ExamConfig, ExamResult, Question, QuestionResult, ResponseValue, Section, SectionResult } from '../types';
 import type { EngineState } from './reducer';
 import { countStatuses, isEmptyResponse } from './reducer';
+import { MSG, hasHost, sendToHost } from './host';
 
 const iso = (t?: number) => (t == null ? null : new Date(t).toISOString());
 const sec = (ms: number) => Math.round(ms / 100) / 10;
@@ -124,16 +125,16 @@ export function buildResult(cfg: ExamConfig, st: EngineState): ExamResult {
 /** Delivers the result through every channel enabled in config.output. */
 export async function deliverResult(cfg: ExamConfig, result: ExamResult): Promise<void> {
   const out = cfg.output ?? {};
-  if (out.localStorage !== false) {
+  // Under a host page, results go back to the host and are not kept in this origin's storage unless asked.
+  const hosted = hasHost();
+  if (out.localStorage ?? !hosted) {
     try {
       localStorage.setItem(`tcs-clone-result:${cfg.id}`, JSON.stringify(result));
     } catch {
       /* storage full / disabled */
     }
   }
-  if (out.postMessage !== false && window.parent !== window) {
-    window.parent.postMessage({ type: 'tcs-clone-result', result }, '*');
-  }
+  if (hosted && out.postMessage !== false) sendToHost(MSG.result, { result });
   window.dispatchEvent(new CustomEvent('tcs-clone-result', { detail: result }));
   if (out.postUrl) {
     try {

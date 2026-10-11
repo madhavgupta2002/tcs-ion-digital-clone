@@ -3,7 +3,17 @@ import { downloadJson } from '../engine/result';
 import { fmtClock } from './ExamPage';
 import './done.css';
 
-export function Done({ cfg, result, onRestart }: { cfg: ExamConfig; result: ExamResult; onRestart: () => void }) {
+export function Done({
+  cfg,
+  result,
+  onRestart,
+  hosted = false,
+}: {
+  cfg: ExamConfig;
+  result: ExamResult;
+  onRestart: () => void;
+  hosted?: boolean;
+}) {
   const showSummary = cfg.features?.showResultSummary !== false;
   return (
     <div className="done">
@@ -65,12 +75,20 @@ export function Done({ cfg, result, onRestart }: { cfg: ExamConfig; result: Exam
         )}
 
         <div className="done-actions">
-          <button className="btn btn-primary" onClick={() => downloadJson(`${cfg.id}-result.json`, result)}>
-            Download Result (JSON)
-          </button>
-          <button className="btn" onClick={onRestart}>
-            Take Again
-          </button>
+          {hosted ? (
+            <button className="btn btn-primary" onClick={() => window.close()}>
+              Close
+            </button>
+          ) : (
+            <>
+              <button className="btn btn-primary" onClick={() => downloadJson(`${cfg.id}-result.json`, result)}>
+                Download Result (JSON)
+              </button>
+              <button className="btn" onClick={onRestart}>
+                Take Again
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
