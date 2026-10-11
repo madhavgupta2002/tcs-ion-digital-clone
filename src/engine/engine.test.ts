@@ -345,7 +345,7 @@ describe('buildResult scoring', () => {
     const r = buildResult(h.cfg, h.st);
     expect(r.submitReason).toBe('timeout');
     expect(r.sections.map((s) => s.submitReason)).toEqual(['timeout', 'timeout']);
-    expect(r.totalTimeSpentSec).toBe(122); // two 61s ticks
+    expect(r.totalTimeSpentSec).toBe(120); // two 61s ticks, each clamped to the 60s section clock
   });
 });
 
