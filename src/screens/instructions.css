@@ -1,19 +1,19 @@
 .ins-root { height: 100vh; display: flex; flex-direction: column; font-family: var(--ui-font); background: #fff; overflow: hidden; }
-.ins-band { flex: none; height: 48px; background: #2b6cb5; }
+.ins-band { flex: none; height: 48px; background: #2d70b6; border-bottom: 1px solid #fff; }
 .ins-cols { flex: 1; display: flex; min-height: 0; }
-.ins-left { width: 78%; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid #d5d5d5; }
-.ins-right { width: 22%; background: linear-gradient(#e2e2e2, #fff); display: flex; flex-direction: column; align-items: center; padding-top: 28px; gap: 10px; }
+.ins-left { flex: 1; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid #d5d5d5; }
+.ins-right { flex: none; width: 396px; background: linear-gradient(#fff 0 70%, #d3d2d3); display: flex; flex-direction: column; align-items: center; padding-top: 28px; gap: 10px; }
 .ins-avatar { width: 44px; height: 44px; border-radius: 50%; background: #d9d9d9; overflow: hidden; display: flex; }
 .ins-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .ins-avatar svg { width: 100%; height: 100%; }
 .ins-name { font-size: 20px; font-weight: bold; color: #3a5a8a; text-align: center; padding: 0 10px; word-break: break-word; }
-.ins-header { flex: none; background: var(--instr-header-bg); font-size: 20px; color: #2d3a4a; padding: 6px 18px; }
+.ins-header { flex: none; height: 37px; display: flex; align-items: center; background: #bce8f5; font-size: 20px; color: #3e637e; padding: 0 10px; }
 .ins-scroll { flex: 1; overflow: auto; padding: 0 18px; font-size: 13px; line-height: 1.45; }
 .ins-scroll ol { padding-left: 22px; margin: 8px 0; }
 .ins-scroll li { margin-bottom: 8px; }
 .ins-footer { flex: none; border-top: 1px solid #c9c9c9; padding: 8px 18px; background: #fff; }
 .ins-footer-row { display: flex; align-items: center; }
-.ins-footer .btn { font-size: 13px; font-weight: bold; padding: 6px 16px; }
+.ins-footer .btn { font-size: 13px; font-weight: bold; height: 34px; padding: 0 18px; }
 .ins-end { justify-content: flex-end; }
 .ins-table { border-collapse: collapse; margin: 8px auto; font-size: 13px; }
 .ins-table th, .ins-table td { border: 1px solid #888; padding: 4px 12px; text-align: left; vertical-align: middle; }
