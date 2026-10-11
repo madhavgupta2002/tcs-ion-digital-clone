@@ -1,0 +1,144 @@
+{
+  "id": "sample-global-1",
+  "title": "Practice Paper (Single Timer)",
+  "candidate": { "name": "Test Candidate" },
+  "timing": { "mode": "global", "totalDurationSec": 1800, "warnAtSec": 300 },
+  "defaults": { "marks": 2, "negativeMarks": 0.5, "titaNegativeMarks": 0 },
+  "features": {
+    "calculator": true,
+    "questionPaper": true,
+    "viewInstructions": true,
+    "showMarks": true,
+    "confirmSubmit": true,
+    "showResultSummary": true
+  },
+  "output": { "postMessage": true, "localStorage": true },
+  "sections": [
+    {
+      "id": "ga",
+      "name": "General Awareness",
+      "questions": [
+        {
+          "id": "ga-q1",
+          "type": "MCQ",
+          "html": "<p>Which planet is commonly known as the Red Planet?</p>",
+          "options": [
+            { "id": "A", "html": "Venus" },
+            { "id": "B", "html": "Mars" },
+            { "id": "C", "html": "Jupiter" },
+            { "id": "D", "html": "Mercury" }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "ga-q2",
+          "type": "MCQ",
+          "html": "<p>Which gas makes up the largest share of Earth's atmosphere?</p>",
+          "options": [
+            { "id": "A", "html": "Oxygen" },
+            { "id": "B", "html": "Carbon dioxide" },
+            { "id": "C", "html": "Argon" },
+            { "id": "D", "html": "Nitrogen" }
+          ],
+          "answer": "D"
+        },
+        {
+          "id": "ga-q3",
+          "type": "MCQ",
+          "html": "<p>What is the SI unit of electrical resistance?</p>",
+          "options": [
+            { "id": "A", "html": "Ohm" },
+            { "id": "B", "html": "Volt" },
+            { "id": "C", "html": "Ampere" },
+            { "id": "D", "html": "Watt" }
+          ],
+          "answer": "A"
+        },
+        {
+          "id": "ga-q4",
+          "type": "MCQ",
+          "html": "<p>Which city is the capital of Australia?</p>",
+          "options": [
+            { "id": "A", "html": "Sydney" },
+            { "id": "B", "html": "Melbourne" },
+            { "id": "C", "html": "Canberra" },
+            { "id": "D", "html": "Perth" }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "ga-q5",
+          "type": "MCQ",
+          "html": "<p>In plant cells, photosynthesis mainly takes place in which organelle?</p>",
+          "options": [
+            { "id": "A", "html": "Mitochondrion" },
+            { "id": "B", "html": "Chloroplast" },
+            { "id": "C", "html": "Nucleus" },
+            { "id": "D", "html": "Ribosome" }
+          ],
+          "answer": "B"
+        }
+      ]
+    },
+    {
+      "id": "reasoning",
+      "name": "Reasoning",
+      "questions": [
+        {
+          "id": "rs-q1",
+          "type": "MCQ",
+          "html": "<p>What comes next in the series 2, 6, 12, 20, 30, ?</p>",
+          "options": [
+            { "id": "A", "html": "38" },
+            { "id": "B", "html": "40" },
+            { "id": "C", "html": "42" },
+            { "id": "D", "html": "44" }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "rs-q2",
+          "type": "MCQ",
+          "html": "<p>In a certain code, each word is coded as the sum of the positions of its letters in the English alphabet (A = 1, B = 2, ..., Z = 26). If CAT is coded as 24, how is DOG coded?</p>",
+          "options": [
+            { "id": "A", "html": "24" },
+            { "id": "B", "html": "26" },
+            { "id": "C", "html": "28" },
+            { "id": "D", "html": "30" }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "rs-q3",
+          "type": "MCQ",
+          "html": "<p>Statements: All pens are books. Some books are cups.<br>Which of the following conclusions definitely follows?</p>",
+          "options": [
+            { "id": "A", "html": "Some pens are cups." },
+            { "id": "B", "html": "Some cups are books." },
+            { "id": "C", "html": "All books are pens." },
+            { "id": "D", "html": "No cup is a pen." }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "rs-q4",
+          "type": "MSQ",
+          "html": "<p>Which of the following numbers are prime? (Select all that apply.)</p>",
+          "options": [
+            { "id": "A", "html": "51" },
+            { "id": "B", "html": "53" },
+            { "id": "C", "html": "57" },
+            { "id": "D", "html": "59" }
+          ],
+          "answer": ["B", "D"]
+        },
+        {
+          "id": "rs-q5",
+          "type": "TITA",
+          "html": "<p>A father is 30 years older than his son. In 5 years' time, the father will be exactly three times as old as the son. What is the son's present age, in years?</p>",
+          "answer": "10"
+        }
+      ]
+    }
+  ]
+}
