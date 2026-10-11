@@ -176,12 +176,14 @@
 .options { margin-top: 41px; display: flex; flex-direction: column; gap: 27px; }
 .option {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   font: 20px/23px Arial, Helvetica, sans-serif;
   cursor: pointer;
 }
-.option input { margin: 4px 0 0 6px; width: 15px; height: 15px; flex: none; cursor: pointer; accent-color: #1a73e8; }
+.option input { margin: 0 0 0 6px; width: 15px; height: 15px; flex: none; cursor: pointer; accent-color: #1a73e8; }
+.option p { margin: 0; }
+.option span { display: inline-flex; align-items: center; min-height: 23px; }
 .tita { margin-top: 30px; }
 
 /* palette show/hide handle: 21×60 at the right edge of the question area */
