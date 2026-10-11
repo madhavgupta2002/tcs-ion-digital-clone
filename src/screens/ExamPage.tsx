@@ -102,7 +102,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
       <div className="q-no">Question No. {qi + 1}.</div>
       <div className="q-content">
         <div className="q-text" dangerouslySetInnerHTML={{ __html: q.html }} />
-        <AnswerArea key={`${si}:${qi}`} type={q.type} options={q.options} value={draft} onChange={setDraft} />
+        <AnswerArea key={`${si}:${qi}`} type={q.type} options={q.options} maxSelections={q.maxSelections} value={draft} onChange={setDraft} />
       </div>
     </>
   );
@@ -318,8 +318,10 @@ function AnswerArea({
   options,
   value,
   onChange,
+  maxSelections,
 }: {
   type: 'MCQ' | 'MSQ' | 'TITA';
+  maxSelections?: number;
   options?: { id: string; html: string }[];
   value: ResponseValue | null;
   onChange: (v: ResponseValue | null) => void;
@@ -342,6 +344,7 @@ function AnswerArea({
               type={type === 'MCQ' ? 'radio' : 'checkbox'}
               name="answer"
               checked={checked}
+              disabled={type === 'MSQ' && !checked && maxSelections != null && selected.length >= maxSelections}
               onChange={() => {
                 if (type === 'MCQ') onChange([o.id]);
                 else onChange(checked ? selected.filter((x) => x !== o.id) : [...selected, o.id]);

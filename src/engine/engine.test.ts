@@ -381,3 +381,25 @@ describe('validateConfig', () => {
     expect(() => validateConfig(c)).toThrow(/totalDurationSec/);
   });
 });
+
+describe('partial MSQ scoring', () => {
+  const cfg: ExamConfig = {
+    id: 'p', title: 'p', candidate: { name: 'x' }, timing: { mode: 'global', totalDurationSec: 600 },
+    sections: [{
+      id: 's', name: 's', msqScoring: 'partial', marks: 2, negativeMarks: 1,
+      questions: [{ id: 'q', type: 'MSQ', html: 'q', options: [{ id: 'A', html: 'a' }, { id: 'B', html: 'b' }, { id: 'C', html: 'c' }], answer: ['A', 'B'] }],
+    }],
+  };
+  const award = (saved: string[]) => {
+    const st = initState(cfg);
+    st.q[0][0].saved = saved;
+    st.q[0][0].status = 'answered';
+    return buildResult(cfg, st).sections[0].questions[0].marksAwarded;
+  };
+  it('gives full, half and zero marks without negatives', () => {
+    expect(award(['A', 'B'])).toBe(2);
+    expect(award(['A'])).toBe(1);
+    expect(award(['A', 'C'])).toBe(0);
+    expect(award(['C'])).toBe(0);
+  });
+});
