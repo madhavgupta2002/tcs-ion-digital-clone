@@ -162,7 +162,7 @@ function accrue(s: EngineState, now: number): EngineState {
   return { ...next, globalRemainingMs: Math.max(0, next.globalRemainingMs - dt), lastTick: now };
 }
 
-function finishExam(s: EngineState, cfg: ExamConfig, now: number, reason: 'manual' | 'timeout'): EngineState {
+function finishExam(s: EngineState, _cfg: ExamConfig, now: number, reason: 'manual' | 'timeout'): EngineState {
   let next = s;
   next.sections.forEach((sec, i) => {
     if (sec.status !== 'submitted') {
