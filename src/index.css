@@ -15,7 +15,7 @@
   --text: #000;
   --green-num: #2e9e2e;
   --red-num: #e0201d;
-  --ui-font: Calibri, Carlito, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --ui-font: Lato, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --q-font: Arial, Helvetica, sans-serif;
 }
 
@@ -51,67 +51,18 @@ button { font-family: inherit; }
 .btn-primary:hover { background: #1976d2; }
 
 /* ------------------------------------------------------------------
-   Question status badges (palette + legend)
+   Question status badges (SVG, see StatusIcon.tsx)
 ------------------------------------------------------------------- */
 .qs {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   border: 0;
   padding: 0;
-  font-family: var(--q-font);
-  color: #fff;
-  cursor: default;
+  margin: 0;
+  background: none;
+  line-height: 0;
   flex: none;
+  cursor: default;
 }
 button.qs { cursor: pointer; }
-.qs-md { width: 54px; height: 50px; font-size: 22px; }
-.qs-sm { width: 36px; height: 34px; font-size: 14px; }
-.qs-xs { width: 24px; height: 24px; font-size: 11px; font-weight: bold; }
-.qs-num { position: relative; z-index: 1; }
-
-.qs-notVisited {
-  color: #222;
-  background: linear-gradient(#f4f4f4, #d4d4d4);
-  border: 1px solid #a9a9a9;
-  border-radius: 3px;
-  box-shadow: inset 0 1px 0 #fff;
-}
-.qs-notAnswered {
-  background: linear-gradient(#f26a2b, #c9340a);
-  clip-path: polygon(0 0, 100% 0, 100% 62%, 74% 100%, 26% 100%, 0 62%);
-  border-radius: 3px 3px 0 0;
-}
-.qs-answered {
-  background: linear-gradient(#8bd12a, #3f9a0e);
-  clip-path: polygon(26% 0, 74% 0, 100% 38%, 100% 100%, 0 100%, 0 38%);
-}
-.qs-marked, .qs-answeredMarked {
-  background: radial-gradient(circle at 50% 35%, #8a5fc0, #5a2e8c);
-  border-radius: 50%;
-}
-.qs-md.qs-marked, .qs-md.qs-answeredMarked { width: 50px; height: 50px; }
-.qs-sm.qs-marked, .qs-sm.qs-answeredMarked { width: 34px; height: 34px; }
-.qs-tick {
-  position: absolute;
-  right: -3px;
-  bottom: -2px;
-  width: 38%;
-  height: 38%;
-  border-radius: 3px;
-  background: #4caf50;
-  border: 1px solid #fff;
-  z-index: 2;
-}
-.qs-tick::after {
-  content: '';
-  position: absolute;
-  left: 32%;
-  top: 14%;
-  width: 28%;
-  height: 50%;
-  border: solid #fff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
+.qs svg { display: block; overflow: visible; }
