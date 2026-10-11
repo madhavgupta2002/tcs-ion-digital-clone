@@ -39,6 +39,8 @@ export interface Question {
   answer?: string | number | string[];
   /** TITA numeric tolerance for scoring (absolute). Default 0 (string-equal after trim). */
   tolerance?: number;
+  /** MSQ: the candidate cannot tick more than this many options (they must untick one first). */
+  maxSelections?: number;
 }
 
 export interface Section {
@@ -53,6 +55,13 @@ export interface Section {
   /** Negative marks applied to TITA questions in this section. Default 0. */
   titaNegativeMarks?: number;
   calculator?: boolean;
+  /** Which calculator opens in this section. Overrides features.calculatorType. */
+  calculatorType?: 'standard' | 'scientific';
+  /**
+   * MSQ scoring. "exact" (default): full marks only for the exact set. "partial": no wrong option selected
+   * gives marks x (correct selected / total correct); any wrong option selected gives 0 (no negative marking).
+   */
+  msqScoring?: 'exact' | 'partial';
   passages?: Passage[];
   questions: Question[];
 }
@@ -86,6 +95,8 @@ export interface ExamConfig {
   };
   features?: {
     calculator?: boolean;
+    /** Default calculator for sections that do not set their own. Default "standard". */
+    calculatorType?: 'standard' | 'scientific';
     questionPaper?: boolean;
     viewInstructions?: boolean;
     /** Show the "Mark/s | Negative Mark/s" strip above each question. */

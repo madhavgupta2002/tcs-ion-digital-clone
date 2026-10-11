@@ -34,6 +34,15 @@ function isCorrect(q: Question, r: ResponseValue): boolean {
   return want === got;
 }
 
+/** Fraction of marks earned under partial MSQ scoring, or null when the question is scored the normal way. */
+function partialFraction(s: Section, q: Question, r: ResponseValue): number | null {
+  if (q.type !== 'MSQ' || s.msqScoring !== 'partial' || q.answer == null) return null;
+  const want = (Array.isArray(q.answer) ? q.answer : [String(q.answer)]).map(String);
+  const got = (Array.isArray(r) ? r : [r]).map(String);
+  if (got.some((g) => !want.includes(g))) return 0;
+  return got.length / want.length;
+}
+
 export function buildResult(cfg: ExamConfig, st: EngineState): ExamResult {
   let total = { marks: 0, maxMarks: 0, correct: 0, incorrect: 0, unattempted: 0 };
   let anyKey = false;
@@ -67,6 +76,14 @@ export function buildResult(cfg: ExamConfig, st: EngineState): ExamResult {
           out.correct = null;
           out.marksAwarded = 0;
           score.unattempted++;
+        } else if (partialFraction(s, q, qs.saved!) != null) {
+          const frac = partialFraction(s, q, qs.saved!)!;
+          const earned = Math.round(plus * frac * 1e6) / 1e6;
+          out.correct = frac === 1;
+          out.marksAwarded = earned;
+          score.marks += earned;
+          if (frac === 1) score.correct++;
+          else score.incorrect++;
         } else if (isCorrect(q, qs.saved!)) {
           out.correct = true;
           out.marksAwarded = plus;
