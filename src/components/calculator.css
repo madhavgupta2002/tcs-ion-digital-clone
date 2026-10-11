@@ -108,3 +108,17 @@
   font-size: 20px;
 }
 .calc-btn.calc-green:hover { background: #29b765; }
+
+/* Scientific variant */
+.calc-panel.calc-wide { width: 560px; }
+.calc-sci-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.calc-sci-left { grid-template-rows: repeat(6, 36px); }
+.calc-btn.calc-on {
+  background: #4a8ee8;
+  border-color: #3a76c8;
+  color: #fff;
+}

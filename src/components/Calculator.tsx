@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
+import { CalcError, evaluate } from './calcEval';
 import './calculator.css';
 
 type Op = '+' | '-' | '*' | '/';
@@ -189,13 +190,21 @@ const KEY_MAP: Record<string, string> = {
   '+': '+', '-': '-', '*': '*', '/': '/', '.': '.', ',': '.', '%': '%',
 };
 
-export function Calculator({ onClose }: { onClose: () => void }) {
-  const [state, setState] = useState<CalcState>(INIT);
+/* ---------------- shared draggable window ---------------- */
+
+function CalcShell({
+  title, wide, mapKey, onPress, onClose, children,
+}: {
+  title: string;
+  wide?: boolean;
+  mapKey: (k: string) => string | undefined;
+  onPress: (key: string) => void;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
   const [pos, setPos] = useState({ x: 10, y: 90 });
   const panelRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ dx: number; dy: number } | null>(null);
-
-  const press = useCallback((key: string) => setState((s) => reduce(s, key)), []);
 
   useEffect(() => {
     panelRef.current?.focus();
@@ -203,10 +212,10 @@ export function Calculator({ onClose }: { onClose: () => void }) {
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    const key = /^[0-9]$/.test(e.key) ? e.key : KEY_MAP[e.key];
+    const key = /^[0-9]$/.test(e.key) ? e.key : mapKey(e.key);
     if (key) {
       e.preventDefault();
-      press(key);
+      onPress(key);
     }
   };
 
@@ -230,17 +239,15 @@ export function Calculator({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const fontSize = state.cur.length > 18 ? 14 : state.cur.length > 12 ? 18 : 24;
-
   return (
     <div
       ref={panelRef}
-      className="calc-panel"
+      className={`calc-panel${wide ? ' calc-wide' : ''}`}
       style={{ left: pos.x, top: pos.y }}
       tabIndex={0}
       onKeyDown={onKeyDown}
       role="dialog"
-      aria-label="Normal Calculator"
+      aria-label={title}
     >
       <div
         className="calc-title"
@@ -249,11 +256,25 @@ export function Calculator({ onClose }: { onClose: () => void }) {
         onPointerUp={onDragEnd}
         onPointerCancel={onDragEnd}
       >
-        <span className="calc-title-text">Normal Calculator</span>
+        <span className="calc-title-text">{title}</span>
         <button type="button" className="calc-close" onClick={onClose} aria-label="Close calculator">
           ×
         </button>
       </div>
+      {children}
+    </div>
+  );
+}
+
+const standardMapKey = (k: string) => KEY_MAP[k];
+
+function StandardCalculator({ onClose }: { onClose: () => void }) {
+  const [state, setState] = useState<CalcState>(INIT);
+  const press = useCallback((key: string) => setState((s) => reduce(s, key)), []);
+  const fontSize = state.cur.length > 18 ? 14 : state.cur.length > 12 ? 18 : 24;
+
+  return (
+    <CalcShell title="Normal Calculator" mapKey={standardMapKey} onPress={press} onClose={onClose}>
       <div className="calc-body">
         <div className="calc-display calc-history" aria-label="Expression">{state.expr}</div>
         <div className="calc-display calc-value" style={{ fontSize }} aria-live="polite">
@@ -274,6 +295,238 @@ export function Calculator({ onClose }: { onClose: () => void }) {
           ))}
         </div>
       </div>
-    </div>
+    </CalcShell>
   );
+}
+
+/* ---------------- scientific ---------------- */
+
+interface SciState {
+  expr: string; // raw expression being typed (internal symbols)
+  hist: string; // history line after '='
+  justEq: boolean;
+  err: boolean;
+  mem: number;
+  inv: boolean; // 2nd / inverse trig
+  deg: boolean;
+}
+
+const SCI_INIT: SciState = { expr: '', hist: '', justEq: false, err: false, mem: 0, inv: false, deg: true };
+
+const SCI_OPS = /[+\-*/^]$/;
+const SCI_BACK = /(?:a?(?:sin|cos|tan)|log|ln|sqrt)\($|.$/;
+
+function sciShow(expr: string): string {
+  return expr
+    .replace(/sqrt\(/g, '√(')
+    .replace(/\*/g, '×')
+    .replace(/\//g, '÷')
+    .replace(/ℯ/g, 'e')
+    .replace(/(a?(?:sin|cos|tan))\(/g, (_m, f: string) => f.replace(/^a(.+)$/, '$1⁻¹') + '(');
+}
+
+function openParens(expr: string): number {
+  let n = 0;
+  for (const c of expr) {
+    if (c === '(') n++;
+    else if (c === ')') n--;
+  }
+  return n;
+}
+
+function sciTry(expr: string, deg: boolean): number | null {
+  if (expr === '') return 0;
+  try {
+    return evaluate(expr, deg ? 'deg' : 'rad');
+  } catch {
+    return null;
+  }
+}
+
+function sciFail(s: SciState, msg: string): SciState {
+  return { ...SCI_INIT, mem: s.mem, deg: s.deg, expr: msg, err: true };
+}
+
+function sciReduce(prev: SciState, key: string): SciState {
+  const s: SciState = prev.err && key !== 'MC' ? { ...SCI_INIT, mem: prev.mem, deg: prev.deg } : prev;
+  // After '=', typing a fresh operand starts a new expression; operators continue from the result.
+  const fresh: SciState = s.justEq ? { ...s, expr: '', hist: '', justEq: false } : s;
+  const append = (t: string, base: SciState = fresh): SciState => ({ ...base, expr: base.expr + t, hist: '', justEq: false });
+
+  if (/^[0-9]$/.test(key)) {
+    if (/(^|[^\d.])0$/.test(fresh.expr)) return { ...fresh, expr: fresh.expr.slice(0, -1) + key };
+    return append(key);
+  }
+
+  switch (key) {
+    case '.': {
+      const num = /[\d.]*$/.exec(fresh.expr)?.[0] ?? '';
+      if (num.includes('.')) return fresh;
+      return append(num === '' ? '0.' : '.');
+    }
+    case '+':
+    case '-':
+    case '*':
+    case '/':
+    case 'pow': {
+      const o = key === 'pow' ? '^' : key;
+      const base: SciState = s.justEq ? { ...s, hist: '', justEq: false } : s;
+      if (base.expr === '') return o === '-' ? append('-', base) : append('0' + o, base);
+      if (base.expr.endsWith('(') && o !== '-') return base;
+      if (SCI_OPS.test(base.expr)) {
+        if (base.expr.length === 1 && base.expr === '-') return base;
+        return { ...base, expr: base.expr.slice(0, -1) + o };
+      }
+      return append(o, base);
+    }
+    case '(':
+      return append('(');
+    case ')':
+      if (openParens(fresh.expr) <= 0 || /[+\-*/^(]$/.test(fresh.expr) || fresh.expr === '') return fresh;
+      return append(')');
+    case '%':
+    case 'fact': {
+      const base: SciState = s.justEq ? { ...s, hist: '', justEq: false } : s;
+      if (!/[\d.)!%πℯ]$/.test(base.expr)) return base;
+      return append(key === '%' ? '%' : '!', base);
+    }
+    case 'pi':
+      return append('π');
+    case 'econst':
+      return append('ℯ');
+    case 'sin':
+    case 'cos':
+    case 'tan':
+    case 'log':
+    case 'ln':
+    case 'sqrt': {
+      const trig = key === 'sin' || key === 'cos' || key === 'tan';
+      const name = trig && s.inv ? 'a' + key : key;
+      const out = s.justEq ? { ...s, expr: `${name}(${s.expr})`, hist: '', justEq: false } : append(name + '(', s);
+      return { ...out, inv: false };
+    }
+    case 'sq':
+    case 'tenx':
+    case 'ex':
+      if (key === 'sq') {
+        const base: SciState = s.justEq ? { ...s, hist: '', justEq: false } : s;
+        if (!/[\d.)!%πℯ]$/.test(base.expr)) return base;
+        return append('^2', base);
+      }
+      return append(key === 'tenx' ? '10^' : 'ℯ^');
+    case 'inv1': {
+      if (s.expr === '') return s;
+      return { ...s, expr: `1/(${s.expr})`, hist: '', justEq: false };
+    }
+    case 'neg': {
+      if (s.expr === '') return s;
+      if (/^-?[\d.]+$/.test(s.expr)) {
+        return { ...s, expr: s.expr.startsWith('-') ? s.expr.slice(1) : '-' + s.expr, justEq: false };
+      }
+      if (/^-\(.*\)$/.test(s.expr)) return { ...s, expr: s.expr.slice(2, -1), justEq: false };
+      return { ...s, expr: `-(${s.expr})`, justEq: false };
+    }
+    case 'back': {
+      if (s.expr === '') return s;
+      return { ...s, expr: s.expr.replace(SCI_BACK, ''), hist: '', justEq: false };
+    }
+    case '=': {
+      if (s.expr === '') return s;
+      const closed = s.expr + ')'.repeat(Math.max(0, openParens(s.expr)));
+      try {
+        const r = evaluate(closed, s.deg ? 'deg' : 'rad');
+        return { ...s, expr: fmt(r), hist: sciShow(closed) + ' =', justEq: true };
+      } catch (e) {
+        return sciFail(s, e instanceof CalcError ? e.message : INVALID);
+      }
+    }
+    case 'C':
+      return { ...SCI_INIT, mem: s.mem, deg: s.deg };
+    case 'inv':
+      return { ...s, inv: !s.inv };
+    case 'deg':
+      return { ...s, deg: !s.deg };
+    case 'MC':
+      return { ...prev, mem: 0 };
+    case 'MR': {
+      const m = fmt(s.mem);
+      return append(s.mem < 0 ? `(${m})` : m);
+    }
+    case 'MS':
+    case 'M+':
+    case 'M-': {
+      const v = sciTry(s.expr + ')'.repeat(Math.max(0, openParens(s.expr))), s.deg);
+      if (v === null) return s;
+      return { ...s, mem: key === 'MS' ? v : key === 'M+' ? s.mem + v : s.mem - v };
+    }
+  }
+  return s;
+}
+
+const SCI_LEFT: BtnDef[] = [
+  { key: 'inv', label: '2nd' }, { key: 'deg', label: 'DEG' }, { key: 'pi', label: 'π' },
+  { key: 'econst', label: 'e' }, { key: 'fact', label: 'n!' },
+  { key: 'sin', label: 'sin' }, { key: 'cos', label: 'cos' }, { key: 'tan', label: 'tan' },
+  { key: 'log', label: 'log' }, { key: 'ln', label: 'ln' },
+  { key: 'sq', label: 'x²' }, { key: 'pow', label: 'xʸ' }, { key: 'tenx', label: '10ˣ' },
+  { key: 'ex', label: 'eˣ' }, { key: 'sqrt', label: '√' },
+  { key: '(', label: '(' }, { key: ')', label: ')' },
+];
+
+// Right-hand block: the standard keys; the √ slot becomes '(' since √ is on the scientific side.
+const SCI_RIGHT: BtnDef[] = BUTTONS.map((b) => {
+  if (b.key === 'sqrt') return { key: '(', label: '(' };
+  if (b.key === 'inv') return { key: 'inv1', label: '1/x' };
+  return b;
+});
+
+const SCI_KEY_MAP: Record<string, string> = {
+  ...KEY_MAP, '^': 'pow', '(': '(', ')': ')', '!': 'fact', p: 'pi',
+};
+const sciMapKey = (k: string) => SCI_KEY_MAP[k];
+
+function ScientificCalculator({ onClose }: { onClose: () => void }) {
+  const [state, setState] = useState<SciState>(SCI_INIT);
+  const press = useCallback((key: string) => setState((s) => sciReduce(s, key)), []);
+
+  const shown = state.err ? state.expr : sciShow(state.expr) || '0';
+  const fontSize = shown.length > 30 ? 14 : shown.length > 20 ? 18 : 24;
+  const label = (b: BtnDef) => {
+    if (b.key === 'deg') return state.deg ? 'DEG' : 'RAD';
+    if (state.inv && (b.key === 'sin' || b.key === 'cos' || b.key === 'tan')) return b.label + '⁻¹';
+    return b.label;
+  };
+  const cls = (b: BtnDef) => `calc-btn ${b.cls ?? ''}${b.key === 'inv' && state.inv ? ' calc-on' : ''}`;
+
+  return (
+    <CalcShell title="Scientific Calculator" wide mapKey={sciMapKey} onPress={press} onClose={onClose}>
+      <div className="calc-body">
+        <div className="calc-display calc-history" aria-label="Expression">{state.hist}</div>
+        <div className="calc-display calc-value" style={{ fontSize }} aria-live="polite">
+          {state.mem !== 0 && <span className="calc-mem">M</span>}
+          {shown}
+        </div>
+        <div className="calc-sci-layout" onMouseDown={(e) => e.preventDefault()}>
+          <div className="calc-grid calc-sci-left">
+            {SCI_LEFT.map((b) => (
+              <button key={b.key} type="button" className={cls(b)} style={b.style} onClick={() => press(b.key)}>
+                {label(b)}
+              </button>
+            ))}
+          </div>
+          <div className="calc-grid">
+            {SCI_RIGHT.map((b) => (
+              <button key={b.key} type="button" className={cls(b)} style={b.style} onClick={() => press(b.key)}>
+                {b.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </CalcShell>
+  );
+}
+
+export function Calculator({ onClose, variant = 'standard' }: { onClose: () => void; variant?: 'standard' | 'scientific' }) {
+  return variant === 'scientific' ? <ScientificCalculator onClose={onClose} /> : <StandardCalculator onClose={onClose} />;
 }
