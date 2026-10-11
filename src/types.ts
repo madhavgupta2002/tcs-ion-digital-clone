@@ -111,6 +111,8 @@ export interface ExamConfig {
     generalHtml?: string;
     /** Fully replaces the generated page-2 instructions (HTML). */
     otherHtml?: string;
+    /** Extra plain-text notes appended as numbered points to the generated general instructions. */
+    notes?: string[];
     /** Declaration shown next to the mandatory checkbox. */
     declaration?: string;
   };
