@@ -151,9 +151,11 @@ function advance(s: EngineState, cfg: ExamConfig, now: number): EngineState {
 /** Wall-clock time accounting: active question, active section, and the relevant countdown. */
 function accrue(s: EngineState, now: number): EngineState {
   if (s.phase !== 'exam' || s.lastTick == null) return { ...s, lastTick: now };
-  const dt = Math.max(0, now - s.lastTick);
   const si = s.activeSection;
   const sec = s.sections[si];
+  // Never accrue past the clock that is running out.
+  const limit = s.globalRemainingMs > 0 ? s.globalRemainingMs : sec.remainingMs;
+  const dt = Math.min(Math.max(0, now - s.lastTick), limit);
   let next = patchQ(s, si, sec.currentQ, { timeSpentMs: s.q[si][sec.currentQ].timeSpentMs + dt });
   next = patchSection(next, si, {
     timeSpentMs: sec.timeSpentMs + dt,
