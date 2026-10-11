@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Exam engine – host demo</title>
+  <style>
+    body { font: 16px system-ui, sans-serif; max-width: 860px; margin: 40px auto; padding: 0 16px; }
+    button { font-size: 16px; padding: 10px 18px; margin-right: 10px; cursor: pointer; }
+    pre { background: #f4f6f8; padding: 14px; overflow: auto; max-height: 420px; }
+  </style>
+</head>
+<body>
+  <h1>Host page demo</h1>
+  <p>This page plays the role of a website (such as AceDBE) that starts an exam on the engine and receives the result.</p>
+  <button id="popup">Start in popup</button>
+  <button id="iframe">Start in iframe</button>
+  <h3>Status</h3>
+  <pre id="out">idle</pre>
+
+  <script src="/embed.js"></script>
+  <script>
+    var out = document.getElementById('out');
+    async function run(mode) {
+      out.textContent = 'loading exam…';
+      var config = await (await fetch('/exams/sample-global.json')).json();
+      config.id = 'demo-' + Date.now(); // unique per attempt
+      try {
+        var result = await TcsExam.start({
+          config: config,
+          mode: mode,
+          onProgress: function (r) { out.textContent = 'progress… answered so far: ' + r.sections.reduce(function (n, s) { return n + s.counts.answered + s.counts.answeredMarked; }, 0); }
+        });
+        out.textContent = JSON.stringify({ score: result.score, submitReason: result.submitReason, totalTimeSpentSec: result.totalTimeSpentSec, sections: result.sections.map(function (s) { return { id: s.id, counts: s.counts, score: s.score }; }) }, null, 2);
+      } catch (e) {
+        out.textContent = 'ERROR: ' + e.message + (e.partial ? '\n(partial result available)' : '');
+      }
+    }
+    document.getElementById('popup').onclick = function () { run('popup'); };
+    document.getElementById('iframe').onclick = function () { run('iframe'); };
+  </script>
+</body>
+</html>

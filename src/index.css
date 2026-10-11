@@ -66,3 +66,5 @@ button { font-family: inherit; }
 }
 button.qs { cursor: pointer; }
 .qs svg { display: block; overflow: visible; }
+
+.embed-wait { padding: 40px; font: 18px var(--ui-font); color: #3e637e; }
