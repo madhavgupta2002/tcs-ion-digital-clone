@@ -1,0 +1,65 @@
+.tita {
+  display: inline-block;
+  font-family: var(--ui-font, Calibri, Arial, sans-serif);
+}
+
+.tita-input {
+  display: block;
+  width: 260px;
+  height: 30px;
+  padding: 2px 6px;
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 0;
+  outline: none;
+  cursor: default;
+}
+
+.tita-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 260px;
+  margin-top: 8px;
+  padding: 8px;
+  background: #f6f6f6;
+  border: 1px solid #ccc;
+}
+
+.tita-btn {
+  padding: 0;
+  font-size: 18px;
+  color: #111;
+  background: linear-gradient(#fff, #e2e2e2);
+  border: 1px solid #888;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.tita-btn:hover:not(:disabled) { background: linear-gradient(#fafafa, #d3d3d3); }
+.tita-btn:active:not(:disabled) { background: #cfcfcf; }
+.tita-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.tita-wide {
+  width: 100%;
+  height: 30px;
+  font-size: 16px;
+}
+
+.tita-key {
+  width: 30px;
+  height: 30px;
+}
+
+.tita-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 30px);
+  gap: 4px;
+}
+
+.tita-arrows {
+  display: flex;
+  gap: 4px;
+}
