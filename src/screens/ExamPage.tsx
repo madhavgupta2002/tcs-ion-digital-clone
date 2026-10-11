@@ -36,7 +36,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [paletteHidden, setPaletteHidden] = useState(false);
   const [legendFor, setLegendFor] = useState<number | null>(null);
-  const [split, setSplit] = useState(50);
+  const [split, setSplit] = useState(59.4);
 
   const si = state.activeSection;
   const section = cfg.sections[si];
