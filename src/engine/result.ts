@@ -73,7 +73,7 @@ export function buildResult(cfg: ExamConfig, st: EngineState): ExamResult {
           score.correct++;
         } else {
           out.correct = false;
-          out.marksAwarded = -minus;
+          out.marksAwarded = minus ? -minus : 0;
           score.marks -= minus;
           score.incorrect++;
         }
