@@ -1,0 +1,13 @@
+.done { min-height: 100vh; background: #f4f6f8; font-family: var(--ui-font); }
+.done-band { height: 48px; background: #2b6cb5; }
+.done-card {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: #fff;
+  border: 1px solid #d6dde4;
+  padding: 26px 32px 30px;
+}
+.done-card h2 { margin: 0 0 8px; color: #2a5d9f; font-weight: normal; }
+.done-card p { font-size: 16px; margin: 0 0 22px; }
+.done-table tfoot td { background: #fafafa; }
+.done-actions { display: flex; gap: 14px; margin-top: 26px; }

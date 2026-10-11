@@ -1,0 +1,318 @@
+{
+  "id": "sample-mock-1",
+  "title": "Mock Test 1",
+  "candidate": { "name": "Test Candidate", "rollNo": "MOCK0001" },
+  "timing": { "mode": "sectional", "warnAtSec": 300 },
+  "defaults": { "marks": 3, "negativeMarks": 1, "titaNegativeMarks": 0 },
+  "features": {
+    "calculator": true,
+    "questionPaper": true,
+    "viewInstructions": true,
+    "showMarks": true,
+    "confirmSubmit": true,
+    "showResultSummary": true
+  },
+  "output": { "postMessage": true, "localStorage": true },
+  "sections": [
+    {
+      "id": "varc",
+      "name": "Verbal Ability & Reading Comprehension",
+      "durationSec": 2400,
+      "passages": [
+        {
+          "id": "varc-p1",
+          "directions": "The passage below is accompanied by four questions. Based on the passage, choose the best answer for each question.",
+          "html": "<p>Cities are often several degrees warmer than the countryside around them, a phenomenon usually called the urban heat island. Dark roofs and asphalt absorb sunlight during the day and release it slowly after dusk, while the dense arrangement of buildings traps warm air and blocks breezes. For decades, planners treated this as an unfortunate but unavoidable cost of density. More recently, attention has turned to a humbler remedy: the planting of trees.</p><p>Trees cool their surroundings in two distinct ways. The first is shade. A mature canopy can intercept most of the sunlight that would otherwise strike a pavement, keeping surface temperatures far lower than those of exposed ground. The second is evapotranspiration: leaves release water vapour, and the energy required to turn liquid into vapour is drawn from the surrounding air. The two effects do not always coincide. Shade works immediately and locally, whereas the cooling from evapotranspiration depends on the tree having enough water to spare, and it diminishes sharply during the drought when it is most needed.</p><p>This dependence on water complicates the simple slogan that cities should plant more trees. A sapling placed in a narrow strip of compacted soil, surrounded by pavement that sheds rain into drains, may never reach the size at which it offers meaningful shade. Surveys in several cities have found that street trees die at surprisingly high rates in their first decade, not because of disease but because of neglect: nobody was assigned to water them, prune them, or protect their roots from utility works. Counting trees planted, a figure that politicians favour, therefore says little about the cooling actually delivered.</p><p>Distribution matters as much as quantity. In many cities, wealthier districts enjoy thick canopies while poorer ones, often built earlier and more densely, have little room for planting. Residents of those districts also tend to have fewer air-conditioned homes, so the people who most need relief from heat are the ones least likely to receive it. Some municipalities have begun to map canopy cover against income and health records, and to direct new planting toward the hottest and most vulnerable blocks first. Such targeting is less photogenic than a ceremonial planting in a central park, but it is considerably more effective per tree.</p><p>None of this implies that trees are a cure-all. Even a generous canopy cannot offset the heat produced by traffic and air-conditioning exhaust, and in humid climates the added moisture from leaves can make the air feel more oppressive. The most sensible reading of the evidence is that trees are one component of a package, alongside lighter-coloured roofs, permeable paving and better building design. What distinguishes them is that they are cheap, they last for generations and they make streets pleasant besides, provided that the city is willing to treat them not as decoration but as infrastructure that requires continuing care.</p>"
+        }
+      ],
+      "questions": [
+        {
+          "id": "varc-q1",
+          "type": "MCQ",
+          "passageId": "varc-p1",
+          "html": "<p>Which one of the following best expresses the central argument of the passage?</p>",
+          "options": [
+            { "id": "A", "html": "Trees are the only reliable way to reduce the urban heat island, so cities should plant as many as possible." },
+            { "id": "B", "html": "Trees can cool cities, but the benefit depends on their survival, upkeep and placement, and they work best alongside other measures." },
+            { "id": "C", "html": "The number of trees planted is the most accurate measure of how much a city has reduced its heat." },
+            { "id": "D", "html": "The urban heat island is largely a myth created by planners to justify spending on greenery." }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "varc-q2",
+          "type": "MCQ",
+          "passageId": "varc-p1",
+          "html": "<p>According to the passage, why does the cooling effect of evapotranspiration weaken during a drought?</p>",
+          "options": [
+            { "id": "A", "html": "Trees shed their leaves, which removes the shade that supports evaporation." },
+            { "id": "B", "html": "Pavements absorb more heat during a drought and overwhelm the cooling effect of leaves." },
+            { "id": "C", "html": "Trees have less water available to release as vapour." },
+            { "id": "D", "html": "The air becomes too humid for any further vapour to be absorbed." }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "varc-q3",
+          "type": "MCQ",
+          "passageId": "varc-p1",
+          "html": "<p>All of the following are given in the passage as reasons why street trees may fail to provide meaningful cooling, EXCEPT:</p>",
+          "options": [
+            { "id": "A", "html": "They are planted in narrow strips of compacted soil." },
+            { "id": "B", "html": "Nobody is responsible for watering or pruning them." },
+            { "id": "C", "html": "Their roots are disturbed by work on utility lines." },
+            { "id": "D", "html": "Residents prune them so heavily that they cannot grow." }
+          ],
+          "answer": "D"
+        },
+        {
+          "id": "varc-q4",
+          "type": "MCQ",
+          "passageId": "varc-p1",
+          "html": "<p>The author's remark that targeted planting is &ldquo;less photogenic than a ceremonial planting in a central park&rdquo; suggests that the author believes:</p>",
+          "options": [
+            { "id": "A", "html": "ceremonial plantings are harmful and should be banned." },
+            { "id": "B", "html": "visible, ceremonial plantings tend to attract more attention than they deserve relative to their benefit." },
+            { "id": "C", "html": "central parks are the best location for new trees because they are seen by the most people." },
+            { "id": "D", "html": "targeted planting is unattractive and therefore unlikely to be adopted by any city." }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "varc-q5",
+          "type": "MCQ",
+          "html": "<p>The passage given below is followed by four alternate summaries. Choose the option that best captures the essence of the passage.</p><p>Before railways, every town set its clocks by the sun, so noon in one place differed by a few minutes from noon in the next. This was harmless while travel was slow. Once trains began running to timetables, the differences caused missed connections and confusion over schedules. Railway companies adopted a single standard time along their lines, and governments later made such standards national law. Local solar time, once the natural measure of the day, survived only in sundials and memory.</p>",
+          "options": [
+            { "id": "A", "html": "The demand for dependable railway schedules pushed societies away from locally observed sun time towards standardised time." },
+            { "id": "B", "html": "Railways were invented mainly to correct the errors that local clocks had introduced into daily life." },
+            { "id": "C", "html": "Sundials were abandoned because they were too inaccurate to be used for scheduling trains." },
+            { "id": "D", "html": "Governments resisted standard time for many years because railway companies had imposed it without consultation." }
+          ],
+          "answer": "A"
+        },
+        {
+          "id": "varc-q6",
+          "type": "TITA",
+          "html": "<p>Five sentences related to a topic are given below. Four of them can be put together to form a meaningful and coherent short paragraph. Identify the odd sentence and key in its number as the answer.</p><p>1. Honeybees tell their hive mates where to find flowers through a movement known as the waggle dance.<br>2. The angle of the dancer's path, measured against the vertical, indicates the direction of the food relative to the sun.<br>3. The length of the waggling run signals roughly how far away the source lies.<br>4. Honey, which bees make from nectar, has been used as a sweetener and a preservative for thousands of years.<br>5. Researchers who decoded these signals showed that the watching bees then fly directly to the indicated spot.</p>",
+          "answer": "4"
+        },
+        {
+          "id": "varc-q7",
+          "type": "TITA",
+          "html": "<p>The four sentences (labelled 1, 2, 3 and 4) below, when properly sequenced, would yield a coherent paragraph. Decide on the proper sequencing of the order of the sentences and key in the four-digit number as your answer.</p><p>1. Religious texts and almanacs therefore dominated the first decades of the trade.<br>2. This opened the way for novels, pamphlets and scientific treatises to reach ordinary readers.<br>3. Early printing presses were slow and expensive to set up, so printers favoured books they were sure would sell.<br>4. As presses became faster and paper cheaper, printers could risk smaller runs of unfamiliar works.</p>",
+          "answer": "3142"
+        },
+        {
+          "id": "varc-q8",
+          "type": "MCQ",
+          "html": "<p>Choose the position (1, 2, 3 or 4) at which the following sentence best fits into the paragraph below.</p><p><b>Sentence:</b> Such conditions kept the early libraries largely a preserve of the educated and the well-off.</p><p><b>Paragraph:</b> The first public libraries were funded by wealthy donors. <b>(1)</b> They often imposed strict rules on who could borrow and for how long. <b>(2)</b> By the late nineteenth century, however, local governments began to fund libraries through taxes. <b>(3)</b> Membership fees disappeared, and borrowing became open to anyone who lived in the district. <b>(4)</b></p>",
+          "options": [
+            { "id": "A", "html": "Option 1" },
+            { "id": "B", "html": "Option 2" },
+            { "id": "C", "html": "Option 3" },
+            { "id": "D", "html": "Option 4" }
+          ],
+          "answer": "B"
+        }
+      ]
+    },
+    {
+      "id": "dilr",
+      "name": "Data Interpretation & Logical Reasoning",
+      "durationSec": 2400,
+      "calculator": true,
+      "passages": [
+        {
+          "id": "dilr-p1",
+          "directions": "Answer the following questions based on the information given below.",
+          "html": "<p>The table shows the quarterly sales (in &#8377; crore) of a company across its four regions during a year.</p><table style='border-collapse:collapse;'><thead><tr><th style='border:1px solid #444;padding:4px 8px;'>Region</th><th style='border:1px solid #444;padding:4px 8px;'>Q1</th><th style='border:1px solid #444;padding:4px 8px;'>Q2</th><th style='border:1px solid #444;padding:4px 8px;'>Q3</th><th style='border:1px solid #444;padding:4px 8px;'>Q4</th></tr></thead><tbody><tr><td style='border:1px solid #444;padding:4px 8px;'>North</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>120</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>150</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>130</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>180</td></tr><tr><td style='border:1px solid #444;padding:4px 8px;'>South</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>200</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>220</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>240</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>260</td></tr><tr><td style='border:1px solid #444;padding:4px 8px;'>East</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>90</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>100</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>110</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>140</td></tr><tr><td style='border:1px solid #444;padding:4px 8px;'>West</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>150</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>170</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>160</td><td style='border:1px solid #444;padding:4px 8px;text-align:right;'>200</td></tr></tbody></table>"
+        },
+        {
+          "id": "dilr-p2",
+          "directions": "Answer the following questions based on the information given below.",
+          "html": "<p>Six friends A, B, C, D, E and F sit in a row of six chairs numbered 1 to 6 from left to right. All of them face the same direction, and &ldquo;to the right of&rdquo; means a higher-numbered chair. Each friend occupies exactly one chair. The following is known:</p><ol><li>A and F occupy the two end chairs.</li><li>B sits immediately to the right of A.</li><li>C and D do not sit next to each other.</li><li>D sits closer to F than C does.</li></ol>"
+        }
+      ],
+      "questions": [
+        {
+          "id": "dilr-q1",
+          "type": "MCQ",
+          "passageId": "dilr-p1",
+          "html": "<p>Which region recorded the highest percentage growth in sales from Q1 to Q4?</p>",
+          "options": [
+            { "id": "A", "html": "North" },
+            { "id": "B", "html": "South" },
+            { "id": "C", "html": "East" },
+            { "id": "D", "html": "West" }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "dilr-q2",
+          "type": "MCQ",
+          "passageId": "dilr-p1",
+          "html": "<p>The South region's sales for the whole year are approximately what percentage of the company's total sales for the year?</p>",
+          "options": [
+            { "id": "A", "html": "33.5%" },
+            { "id": "B", "html": "35.1%" },
+            { "id": "C", "html": "36.8%" },
+            { "id": "D", "html": "38.2%" }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "dilr-q3",
+          "type": "MCQ",
+          "passageId": "dilr-p1",
+          "html": "<p>In how many quarters were West's sales strictly greater than the average sales of the four regions in that quarter?</p>",
+          "options": [
+            { "id": "A", "html": "1" },
+            { "id": "B", "html": "2" },
+            { "id": "C", "html": "3" },
+            { "id": "D", "html": "4" }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "dilr-q4",
+          "type": "TITA",
+          "passageId": "dilr-p1",
+          "html": "<p>By how many &#8377; crore do the company's total sales in Q3 and Q4 together exceed its total sales in Q1 and Q2 together?</p>",
+          "answer": "220"
+        },
+        {
+          "id": "dilr-q5",
+          "type": "MCQ",
+          "passageId": "dilr-p2",
+          "html": "<p>Who sits immediately to the left of F?</p>",
+          "options": [
+            { "id": "A", "html": "B" },
+            { "id": "B", "html": "C" },
+            { "id": "C", "html": "D" },
+            { "id": "D", "html": "E" }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "dilr-q6",
+          "type": "MCQ",
+          "passageId": "dilr-p2",
+          "html": "<p>How many friends sit between B and D?</p>",
+          "options": [
+            { "id": "A", "html": "0" },
+            { "id": "B", "html": "1" },
+            { "id": "C", "html": "2" },
+            { "id": "D", "html": "3" }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "dilr-q7",
+          "type": "MSQ",
+          "passageId": "dilr-p2",
+          "html": "<p>Which of the following statements is/are true? (Select all that apply.)</p>",
+          "options": [
+            { "id": "A", "html": "E sits between C and D." },
+            { "id": "B", "html": "F sits next to C." },
+            { "id": "C", "html": "B sits next to C." },
+            { "id": "D", "html": "D sits in one of the end chairs." }
+          ],
+          "answer": ["A", "C"]
+        }
+      ]
+    },
+    {
+      "id": "qa",
+      "name": "Quantitative Ability",
+      "durationSec": 2400,
+      "calculator": true,
+      "questions": [
+        {
+          "id": "qa-q1",
+          "type": "MCQ",
+          "html": "<p>If x + 1/x = 5, then the value of x<sup>2</sup> + 1/x<sup>2</sup> is:</p>",
+          "options": [
+            { "id": "A", "html": "21" },
+            { "id": "B", "html": "23" },
+            { "id": "C", "html": "25" },
+            { "id": "D", "html": "27" }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "qa-q2",
+          "type": "MCQ",
+          "html": "<p>A train 150 m long crosses a signal pole in 10 seconds and crosses a platform in 25 seconds, both at constant speed. The length of the platform, in metres, is:</p>",
+          "options": [
+            { "id": "A", "html": "150" },
+            { "id": "B", "html": "175" },
+            { "id": "C", "html": "200" },
+            { "id": "D", "html": "225" }
+          ],
+          "answer": "D"
+        },
+        {
+          "id": "qa-q3",
+          "type": "MCQ",
+          "html": "<p>The sum of the first 20 terms of an arithmetic progression whose first term is 3 and common difference is 4 is:</p>",
+          "options": [
+            { "id": "A", "html": "820" },
+            { "id": "B", "html": "800" },
+            { "id": "C", "html": "840" },
+            { "id": "D", "html": "860" }
+          ],
+          "answer": "A"
+        },
+        {
+          "id": "qa-q4",
+          "type": "MCQ",
+          "html": "<p>The compound interest, in &#8377;, on &#8377; 8000 for 2 years at 10% per annum, compounded annually, is:</p>",
+          "options": [
+            { "id": "A", "html": "1600" },
+            { "id": "B", "html": "1650" },
+            { "id": "C", "html": "1680" },
+            { "id": "D", "html": "1720" }
+          ],
+          "answer": "C"
+        },
+        {
+          "id": "qa-q5",
+          "type": "MCQ",
+          "html": "<p>The number of distinct arrangements of the letters of the word LEVEL is:</p>",
+          "options": [
+            { "id": "A", "html": "15" },
+            { "id": "B", "html": "30" },
+            { "id": "C", "html": "60" },
+            { "id": "D", "html": "120" }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "qa-q6",
+          "type": "MCQ",
+          "html": "<p>The equation &radic;(x + 7) = x &minus; 5 has:</p>",
+          "options": [
+            { "id": "A", "html": "exactly one solution, x = 2" },
+            { "id": "B", "html": "exactly one solution, x = 9" },
+            { "id": "C", "html": "two solutions, x = 2 and x = 9" },
+            { "id": "D", "html": "no real solution" }
+          ],
+          "answer": "B"
+        },
+        {
+          "id": "qa-q7",
+          "type": "TITA",
+          "html": "<p>What is the remainder when 2<sup>100</sup> is divided by 7?</p>",
+          "answer": "2"
+        },
+        {
+          "id": "qa-q8",
+          "type": "TITA",
+          "html": "<p>Pipe A alone can fill a tank in 4 hours and pipe B alone can fill it in 7 hours. If both pipes are opened together, the tank will be filled in how many hours? (Give your answer correct to two decimal places.)</p>",
+          "answer": 2.5454,
+          "tolerance": 0.01
+        }
+      ]
+    }
+  ]
+}
