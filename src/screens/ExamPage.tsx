@@ -283,7 +283,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
         </div>
       </footer>
 
-      {calcOpen && <Calculator onClose={() => setCalcOpen(false)} />}
+      {calcOpen && <Calculator onClose={() => setCalcOpen(false)} variant={section.calculatorType ?? cfg.features?.calculatorType ?? 'standard'} />}
       {paperOpen && <QuestionPaperModal cfg={cfg} sectionIndex={si} onClose={() => setPaperOpen(false)} />}
       {instrOpen && <InstructionsModal cfg={cfg} onClose={() => setInstrOpen(false)} />}
       {confirmOpen && (
