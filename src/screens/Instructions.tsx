@@ -69,6 +69,9 @@ export function GeneralInstructionsBody({ cfg }: { cfg: ExamConfig }) {
         {cfg.features?.calculator !== false && (
           <li>A virtual on-screen calculator is available for calculations; open it from the top bar when needed.</li>
         )}
+        {cfg.instructions?.notes?.map((note, i) => (
+          <li key={i}>{note}</li>
+        ))}
         <li>
           The question palette on the right uses the following symbols to show the state of each question:
           <table className="ins-table">
