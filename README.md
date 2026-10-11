@@ -83,6 +83,10 @@ The full types are in [`src/types.ts`](src/types.ts).
 | Marks | Resolved per question, then section, then `defaults`, then 3 / 1 / 0 |
 | `answer` | Optional. When present, the result includes correctness and a score |
 | HTML | Question, option, passage, and instruction fields render raw HTML from the config, so load only configs you trust |
+| `calculatorType` | `"standard"` (default) or `"scientific"`, set in `features` or per section |
+| `msqScoring` | Per section. `"exact"` (default) or `"partial"`: marks x (correct selected / total correct), 0 if any wrong option is selected, no negatives |
+| `maxSelections` | Per MSQ question. Further options are disabled once this many are ticked |
+| `instructions.notes` | Array of plain-text notes appended to the general instructions |
 | `sectional` | One clock per section. Sections run in order, and other tabs are locked. At zero the section auto-submits and the next one starts |
 | `global` | A single clock. Tabs switch freely. At zero the whole exam auto-submits |
 
