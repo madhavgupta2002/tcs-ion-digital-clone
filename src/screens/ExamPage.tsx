@@ -13,12 +13,12 @@ import { SubmitConfirm } from '../components/SubmitConfirm';
 import { Avatar } from '../components/Avatar';
 import './exam.css';
 
-const LEGEND: { status: QStatus; label: string }[] = [
-  { status: 'notVisited', label: 'Not Visited' },
-  { status: 'notAnswered', label: 'Not Answered' },
-  { status: 'answered', label: 'Answered' },
-  { status: 'marked', label: 'Marked for Review' },
-  { status: 'answeredMarked', label: 'Answered & Marked for Review(will be considered for evaluation)' },
+const LEGEND: { status: QStatus; key: string; label: string }[] = [
+  { status: 'notVisited', key: 'nv', label: 'Not Visited' },
+  { status: 'notAnswered', key: 'na', label: 'Not Answered' },
+  { status: 'answered', key: 'a', label: 'Answered' },
+  { status: 'marked', key: 'm', label: 'Marked for Review' },
+  { status: 'answeredMarked', key: 'am', label: 'Answered & Marked for Review(will be considered for evaluation)' },
 ];
 
 export function fmtClock(ms: number): string {
@@ -92,7 +92,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
 
   const marksStrip = features.showMarks !== false && (
     <div className="marks-strip">
-      Mark/s: <span className="pos">{plus.toFixed(2)}</span> | Negative Mark/s: <span className="neg">{minus.toFixed(2)}</span>
+      Mark/s:<span className="pos">{plus.toFixed(2)}</span>| Negative Mark/s:<span className="neg">{minus.toFixed(2)}</span>
     </div>
   );
 
@@ -100,7 +100,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
     <>
       {marksStrip}
       <div className="q-no">Question No. {qi + 1}.</div>
-      <div className="q-scroll" ref={qPaneRef}>
+      <div className="q-content">
         <div className="q-text" dangerouslySetInnerHTML={{ __html: q.html }} />
         <AnswerArea key={`${si}:${qi}`} type={q.type} options={q.options} value={draft} onChange={setDraft} />
       </div>
@@ -121,7 +121,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
                 dispatch({ type: 'LOG', event: { t: now(), type: 'open_calculator', section: section.id } });
               }}
             >
-              <span className="ico ico-calc" /> Calculator
+              <CalcIcon /> Calculator
             </button>
           )}
           {features.questionPaper !== false && (
@@ -132,7 +132,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
                 dispatch({ type: 'LOG', event: { t: now(), type: 'open_question_paper', section: section.id } });
               }}
             >
-              <span className="ico ico-paper" /> Question Paper
+              <PaperIcon /> Question Paper
             </button>
           )}
           {features.viewInstructions !== false && (
@@ -143,7 +143,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
                 dispatch({ type: 'LOG', event: { t: now(), type: 'open_instructions' } });
               }}
             >
-              <span className="ico ico-info">i</span> View Instruction
+              <InfoIcon /> View Instruction
             </button>
           )}
         </div>
@@ -155,7 +155,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
           <div className="sections-row">
             <span className="sections-label">Sections</span>
             <span className={`time-left ${warn ? 'warn' : ''}`}>
-              Time Left : <b>{fmtClock(remaining)}</b>
+              Time Left : <span className="clock">{fmtClock(remaining)}</span>
             </span>
           </div>
 
@@ -170,7 +170,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
                   onClick={() => !locked && dispatch({ type: 'GOTO_SECTION', index: i, now: now() })}
                   onMouseLeave={() => setLegendFor(null)}
                 >
-                  {locked && <span className="lock" aria-label="locked" />}
+                  {locked && <LockIcon />}
                   <span>{s.name}</span>
                   {!locked && (
                     <span className="tab-info" onMouseEnter={() => setLegendFor(i)}>
@@ -195,37 +195,45 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
                 <div className="divider" onMouseDown={startDrag}>
                   <span />
                 </div>
-                <div className="question-pane">{questionBlock}</div>
+                <div className="question-pane" ref={qPaneRef}>
+                  {questionBlock}
+                </div>
               </>
             ) : (
-              <div className="question-pane full">{questionBlock}</div>
+              <div className="question-pane full" ref={qPaneRef}>
+                {questionBlock}
+              </div>
             )}
-          </div>
 
           <button
             className="collapse"
             title={paletteHidden ? 'Show palette' : 'Hide palette'}
             onClick={() => setPaletteHidden((h) => !h)}
           >
-            {paletteHidden ? '‹' : '›'}
+            <Chevron left={paletteHidden} />
           </button>
+          </div>
         </main>
 
         {/* ---------------- right column ---------------- */}
         {!paletteHidden && (
           <aside className="side">
             <div className="profile">
-              <Avatar url={cfg.candidate.photoUrl} size={110} />
+              <div className="avatar">
+                <Avatar url={cfg.candidate.photoUrl} width={113} height={100} />
+              </div>
               <div className="cand-name">{cfg.candidate.name}</div>
             </div>
 
             <div className="side-box">
               <div className="legend">
                 {LEGEND.map((l) => (
-                  <div key={l.status} className={`legend-item ${l.status === 'answeredMarked' ? 'wide' : ''}`}>
-                    <StatusIcon status={l.status} label={counts[l.status]} size="sm" />
-                    <span>{l.label}</span>
-                  </div>
+                  <span key={l.status}>
+                    <span className={`lg lg-${l.key}`}>
+                      <StatusIcon status={l.status} label={counts[l.status]} size="sm" />
+                    </span>
+                    <span className={`lg-text t-${l.key}`}>{l.label}</span>
+                  </span>
                 ))}
               </div>
               <div className="side-bar" />
@@ -237,6 +245,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
                       key={i}
                       status={qs.status}
                       label={i + 1}
+                      current={i === qi}
                       onClick={() => dispatch({ type: 'GOTO_QUESTION', index: i, now: now() })}
                       title={`Question ${i + 1}`}
                     />
@@ -251,20 +260,20 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
       {/* ---------------- bottom bar ---------------- */}
       <footer className="bottombar">
         <div className="bb-main">
-          <button className="btn" onClick={() => dispatch({ type: 'MARK_NEXT', now: now() })}>
+          <button className="bbtn" onClick={() => dispatch({ type: 'MARK_NEXT', now: now() })}>
             Mark for review and Next
           </button>
-          <button className="btn" onClick={() => dispatch({ type: 'CLEAR', now: now() })}>
+          <button className="bbtn" onClick={() => dispatch({ type: 'CLEAR', now: now() })}>
             Clear Response
           </button>
           <span className="spacer" />
-          <button className="btn btn-primary" onClick={() => dispatch({ type: 'SAVE_NEXT', now: now() })}>
+          <button className="bbtn blue" onClick={() => dispatch({ type: 'SAVE_NEXT', now: now() })}>
             Save &amp; Next
           </button>
         </div>
         <div className="bb-side">
           <button
-            className="btn btn-primary"
+            className="bbtn blue"
             disabled={minLeft > 0}
             title={minLeft > 0 ? `You can submit after ${fmtClock(minLeft)}` : undefined}
             onClick={() => (features.confirmSubmit === false ? doSubmit() : setConfirmOpen(true))}
@@ -343,5 +352,49 @@ function AnswerArea({
         );
       })}
     </div>
+  );
+}
+
+function CalcIcon() {
+  return (
+    <svg className="ico" width="22" height="26" viewBox="0 0 22 26" aria-hidden>
+      <rect width="22" height="26" rx="3" fill="#f6a01a" />
+      <rect x="3" y="3" width="16" height="6" rx="1" fill="#5b3300" />
+      {[0, 1, 2].map((r) => [0, 1, 2].map((c) => <rect key={`${r}${c}`} x={3.5 + c * 5.5} y={12 + r * 4.5} width="4" height="3" rx="0.6" fill="#5b3300" />))}
+    </svg>
+  );
+}
+function PaperIcon() {
+  return (
+    <svg className="ico" width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+      <circle cx="11" cy="11" r="11" fill="#3fbf6f" />
+      <rect x="6.5" y="5" width="9" height="12" rx="1" fill="#fff" />
+      <path d="M8.5 8.5h5M8.5 11h5M8.5 13.5h5" stroke="#3fbf6f" strokeWidth="1.3" />
+    </svg>
+  );
+}
+function InfoIcon() {
+  return (
+    <svg className="ico" width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+      <circle cx="11" cy="11" r="11" fill="#2f8be6" />
+      <text x="11" y="16.5" textAnchor="middle" fill="#fff" fontFamily="Georgia, serif" fontStyle="italic" fontWeight="bold" fontSize="16">
+        i
+      </text>
+    </svg>
+  );
+}
+function LockIcon() {
+  return (
+    <svg className="lock" width="11" height="14" viewBox="0 0 10 13" aria-label="locked">
+      <path d="M2.3 6V4.2a2.7 2.7 0 0 1 5.4 0V6" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      <rect x="0" y="5.6" width="10" height="7.4" rx="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+function Chevron({ left }: { left: boolean }) {
+  return (
+    <svg width="9" height="14" viewBox="0 0 9 14" aria-hidden style={{ transform: left ? 'scaleX(-1)' : undefined }}>
+      <path d="M1.5 1.5 7 7l-5.5 5.5" fill="none" stroke="#fff" strokeWidth="1.6" />
+    </svg>
   );
 }
