@@ -228,7 +228,7 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
                   </div>
                 ))}
               </div>
-              <div className="side-bar">{section.name}</div>
+              <div className="side-bar" />
               <div className="palette">
                 <div className="palette-title">Choose a question</div>
                 <div className="palette-grid">
