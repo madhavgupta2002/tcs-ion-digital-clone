@@ -185,7 +185,7 @@
 .option p { margin: 0; }
 .option > .option-content { display: block; min-width: 0; min-height: 23px; }
 .q-text .katex, .option-content .katex, .passage-text .katex { font-size: 1em; }
-.tita { margin-top: 30px; }
+.tita { margin-top: 30px; padding-left: 4%; }
 
 /* palette show/hide handle: 21×60 at the right edge of the question area */
 .collapse {

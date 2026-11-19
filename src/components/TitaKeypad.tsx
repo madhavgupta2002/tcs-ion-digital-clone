@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { backspaceKey, insertKey, moveLeft, moveRight } from './titaInput';
+import type { TitaState } from './titaInput';
 import './tita.css';
-
-const MAX_LEN = 20;
 
 interface Props {
   value: string;
@@ -9,11 +9,24 @@ interface Props {
   disabled?: boolean;
 }
 
-const DIGIT_ROWS = [
-  ['7', '8', '9'],
-  ['4', '5', '6'],
-  ['1', '2', '3'],
-  ['0', '.', '-'],
+type Key = { label: string; kind: 'char' | 'backspace' | 'left' | 'right' | 'clear'; aria?: string };
+
+/** Same rows as the TCS iON numeric keypad. */
+const ROWS: Key[][] = [
+  [{ label: 'Backspace', kind: 'backspace' }],
+  ['7', '8', '9'].map((d) => ({ label: d, kind: 'char' as const, aria: `Number ${d}` })),
+  ['4', '5', '6'].map((d) => ({ label: d, kind: 'char' as const, aria: `Number ${d}` })),
+  ['1', '2', '3'].map((d) => ({ label: d, kind: 'char' as const, aria: `Number ${d}` })),
+  [
+    { label: '0', kind: 'char', aria: 'Number 0' },
+    { label: '.', kind: 'char', aria: 'point' },
+    { label: '-', kind: 'char', aria: 'negative' },
+  ],
+  [
+    { label: '←', kind: 'left', aria: 'Move caret left' },
+    { label: '→', kind: 'right', aria: 'Move caret right' },
+  ],
+  [{ label: 'Clear All', kind: 'clear' }],
 ];
 
 export function TitaKeypad({ value, onChange, disabled }: Props) {
@@ -39,43 +52,25 @@ export function TitaKeypad({ value, onChange, disabled }: Props) {
     el.setSelectionRange(pos, pos);
   }, [pos, value]);
 
-  const commit = (next: string, nextCaret: number) => {
+  const apply = (next: TitaState) => {
     userActed.current = true;
-    lastEmitted.current = next;
-    setCaret(nextCaret);
-    if (next !== value) onChange(next);
+    lastEmitted.current = next.value;
+    setCaret(next.caret);
+    if (next.value !== value) onChange(next.value);
   };
 
-  const insert = (ch: string) => {
-    if (disabled || value.length >= MAX_LEN) return;
-    const hasNeg = value.startsWith('-');
-    if (ch === '-') {
-      if (pos !== 0 || hasNeg) return;
-    } else {
-      if (hasNeg && pos === 0) return; // nothing may precede the minus sign
-      if (ch === '.' && value.includes('.')) return;
-    }
-    commit(value.slice(0, pos) + ch + value.slice(pos), pos + 1);
-  };
-
-  const backspace = () => {
-    if (disabled || pos === 0) return;
-    commit(value.slice(0, pos - 1) + value.slice(pos), pos - 1);
-  };
-
-  const move = (delta: number) => {
+  const press = (key: Key) => {
     if (disabled) return;
-    userActed.current = true;
-    setCaret(Math.max(0, Math.min(value.length, pos + delta)));
-  };
-
-  const clearAll = () => {
-    if (disabled) return;
-    commit('', 0);
+    const state = { value, caret: pos };
+    if (key.kind === 'char') apply(insertKey(state, key.label));
+    else if (key.kind === 'backspace') apply(backspaceKey(state));
+    else if (key.kind === 'left') apply(moveLeft(state));
+    else if (key.kind === 'right') apply(moveRight(state));
+    else apply({ value: '', caret: 0 });
   };
 
   return (
-    <div className="tita">
+    <div className="tita-keypad">
       <input
         ref={inputRef}
         className="tita-input"
@@ -93,45 +88,25 @@ export function TitaKeypad({ value, onChange, disabled }: Props) {
         }}
       />
       <div className="tita-panel" onMouseDown={(e) => e.preventDefault()}>
-        <button type="button" className="tita-btn tita-wide" disabled={disabled} onClick={backspace}>
-          Backspace
-        </button>
-        <div className="tita-grid">
-          {DIGIT_ROWS.flat().map((k) => (
-            <button
-              key={k}
-              type="button"
-              className="tita-btn tita-key"
-              disabled={disabled}
-              onClick={() => insert(k)}
-            >
-              {k}
-            </button>
-          ))}
-        </div>
-        <div className="tita-arrows">
-          <button
-            type="button"
-            className="tita-btn tita-key"
-            disabled={disabled}
-            onClick={() => move(-1)}
-            aria-label="Move caret left"
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            className="tita-btn tita-key"
-            disabled={disabled}
-            onClick={() => move(1)}
-            aria-label="Move caret right"
-          >
-            →
-          </button>
-        </div>
-        <button type="button" className="tita-btn tita-wide" disabled={disabled} onClick={clearAll}>
-          Clear All
-        </button>
+        {ROWS.map((row, i) => (
+          <Fragment key={i}>
+            {row.map((key) => (
+              <button
+                key={key.label}
+                type="button"
+                className={`tita-btn ${key.kind === 'char' ? 'tita-key' : 'tita-spl'}${
+                  key.kind === 'left' || key.kind === 'right' ? ' tita-arrow' : ''
+                }`}
+                disabled={disabled}
+                aria-label={key.aria}
+                onClick={() => press(key)}
+              >
+                {key.label}
+              </button>
+            ))}
+            <br />
+          </Fragment>
+        ))}
       </div>
     </div>
   );

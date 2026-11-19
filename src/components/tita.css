@@ -1,65 +1,60 @@
-.tita {
+/* Numeric keypad, sized and coloured like the TCS iON console's vKeyboard
+   (keyboard_style.css as rendered inside the exam page, border-box, 16px). */
+.tita-keypad {
   display: inline-block;
-  font-family: var(--ui-font, Calibri, Arial, sans-serif);
+  vertical-align: top;
 }
 
 .tita-input {
   display: block;
-  width: 260px;
-  height: 30px;
-  padding: 2px 6px;
-  font-size: 18px;
-  font-family: Arial, Helvetica, sans-serif;
+  width: 143px;
+  height: 20px;
+  margin: 0;
+  padding: 1px 2px;
+  font: 13.3333px Arial, Helvetica, sans-serif;
   color: #000;
   background: #fff;
-  border: 1px solid #999;
+  border: 2px inset #767676;
   border-radius: 0;
   outline: none;
   cursor: default;
 }
 
 .tita-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 260px;
-  margin-top: 8px;
-  padding: 8px;
-  background: #f6f6f6;
-  border: 1px solid #ccc;
+  width: 135px;
+  padding: 5px;
+  background: #f4f4f4;
+  text-align: center;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .tita-btn {
-  padding: 0;
-  font-size: 18px;
-  color: #111;
-  background: linear-gradient(#fff, #e2e2e2);
-  border: 1px solid #888;
-  border-radius: 3px;
+  display: inline-block;
+  height: 32px;
+  margin: 2px;
+  font: bold 16px/24px Arial, Helvetica, sans-serif;
+  color: #000;
+  border: 1px solid #666;
+  border-radius: 6px;
   cursor: pointer;
+  vertical-align: baseline;
 }
-.tita-btn:hover:not(:disabled) { background: linear-gradient(#fafafa, #d3d3d3); }
-.tita-btn:active:not(:disabled) { background: #cfcfcf; }
-.tita-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.tita-btn:active:not(:disabled) { position: relative; top: 1px; }
+.tita-btn:disabled { cursor: not-allowed; }
 
-.tita-wide {
-  width: 100%;
-  height: 30px;
-  font-size: 16px;
-}
-
+/* digits, point and minus */
 .tita-key {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  padding: 3px 0;
+  background: #eee;
 }
+.tita-key:hover:not(:disabled) { background: #cee9fc; }
 
-.tita-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 30px);
-  gap: 4px;
+/* Backspace, arrows, Clear All */
+.tita-spl {
+  padding: 3px 6px;
+  background: #dedbe4;
 }
-
-.tita-arrows {
-  display: flex;
-  gap: 4px;
-}
+.tita-spl:hover:not(:disabled) { background: #8cb82b; }
+.tita-arrow { font-weight: normal; }
