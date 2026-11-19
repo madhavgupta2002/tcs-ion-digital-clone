@@ -102,6 +102,11 @@ export function ExamPage({ cfg, state, dispatch }: { cfg: ExamConfig; state: Eng
       <div className="q-no">Question No. {qi + 1}.</div>
       <div className="q-content">
         <div className="q-text" dangerouslySetInnerHTML={{ __html: q.html }} />
+        {q.msqPartialMarks && q.msqPartialMarks.length > 2 && <p className="partial-marking">
+          Partial credit with no incorrect option selected:{' '}
+          {q.msqPartialMarks.slice(1, -1).map((mark, index) => `${index + 1} correct: +${mark}`).join('; ')}.
+          {' '}All correct: +{plus}. Any incorrect option: −{minus}.
+        </p>}
         <AnswerArea key={`${si}:${qi}`} type={q.type} options={q.options} maxSelections={q.maxSelections} value={draft} onChange={setDraft} />
       </div>
     </>
@@ -320,12 +325,22 @@ function AnswerArea({
   onChange,
   maxSelections,
 }: {
-  type: 'MCQ' | 'MSQ' | 'TITA';
+  type: 'MCQ' | 'MSQ' | 'TITA' | 'WRITTEN';
   maxSelections?: number;
   options?: { id: string; html: string }[];
   value: ResponseValue | null;
   onChange: (v: ResponseValue | null) => void;
 }) {
+  if (type === 'WRITTEN') {
+    return <div className="written-answer">
+      <label htmlFor="written-response">Your working and answer</label>
+      <textarea id="written-response" rows={8} maxLength={20000}
+        value={typeof value === 'string' ? value : ''}
+        onChange={(event) => onChange(event.target.value || null)}
+        placeholder="Write your answer here. This question is for self review." />
+      <p>Written answers are saved for review and excluded from the automatic score.</p>
+    </div>;
+  }
   if (type === 'TITA') {
     return (
       <div className="tita">
@@ -350,7 +365,7 @@ function AnswerArea({
                 else onChange(checked ? selected.filter((x) => x !== o.id) : [...selected, o.id]);
               }}
             />
-            <span dangerouslySetInnerHTML={{ __html: o.html }} />
+            <span className="option-content" dangerouslySetInnerHTML={{ __html: o.html }} />
           </label>
         );
       })}

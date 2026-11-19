@@ -25,7 +25,7 @@ function totalSec(cfg: ExamConfig): number {
 function typesPresent(cfg: ExamConfig): QuestionType[] {
   const set = new Set<QuestionType>();
   cfg.sections.forEach((s) => s.questions.forEach((q) => set.add(q.type)));
-  return (['MCQ', 'MSQ', 'TITA'] as QuestionType[]).filter((t) => set.has(t));
+  return (['MCQ', 'MSQ', 'TITA', 'WRITTEN'] as QuestionType[]).filter((t) => set.has(t));
 }
 
 const LEGEND: { status: QStatus; label: number; text: string }[] = [
@@ -50,6 +50,7 @@ export function GeneralInstructionsBody({ cfg }: { cfg: ExamConfig }) {
     MCQ: 'multiple-choice questions with exactly one correct option',
     MSQ: 'multiple-select questions where one or more options may be correct',
     TITA: 'type-in questions where you enter the answer with the on-screen keypad',
+    WRITTEN: 'written-answer questions for self review',
   };
   return (
     <div>
@@ -160,7 +161,8 @@ function OtherBody({ cfg }: { cfg: ExamConfig }) {
   );
   const marking = [...scheme.values()].map((m) => (
     <li key={`${m.type}${m.plus}${m.minus}`} style={{ marginBottom: 2 }}>
-      {m.type}: +{m.plus} for a correct answer, {m.minus > 0 ? `−${m.minus} for a wrong answer` : 'no deduction for a wrong answer'}, 0 if unattempted.
+      {m.type === 'WRITTEN' ? 'Written answers: saved for self review, excluded from automatic scoring.'
+        : <>{m.type}: +{m.plus} for a correct answer, {m.minus > 0 ? `−${m.minus} for a wrong answer` : 'no deduction for a wrong answer'}, 0 if unattempted.</>}
     </li>
   ));
 

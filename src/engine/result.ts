@@ -19,15 +19,32 @@ export function marksFor(cfg: ExamConfig, s: Section, q: Question): { plus: numb
 function isCorrect(q: Question, r: ResponseValue): boolean {
   const key = q.answer;
   if (key == null) return false;
+  const alternatives = [key, ...(q.acceptedAnswers ?? [])];
   if (q.type === 'TITA') {
     const given = String(r).trim();
-    const want = String(key).trim();
-    if (q.tolerance != null) {
-      const a = Number(given);
-      const b = Number(want);
-      return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= q.tolerance;
+    if (q.answerRanges) {
+      const value = Number(given);
+      return given !== '' && Number.isFinite(value)
+        && q.answerRanges.some(([low, high]) => value >= low && value <= high);
     }
-    return given === want || (given !== '' && Number(given) === Number(want));
+    if (q.answerRange) {
+      const value = Number(given);
+      return given !== '' && Number.isFinite(value)
+        && value >= q.answerRange[0] && value <= q.answerRange[1];
+    }
+    return alternatives.some((answer) => {
+      const want = String(answer).trim();
+      if (q.tolerance != null) {
+        const a = Number(given);
+        const b = Number(want);
+        return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= q.tolerance!;
+      }
+      return given === want || (given !== '' && Number(given) === Number(want));
+    });
+  }
+  if (q.type === 'MCQ' && q.acceptedAnswers?.length) {
+    const selected = Array.isArray(r) ? r : [r];
+    return selected.length === 1 && alternatives.some((answer) => String(answer) === selected[0]);
   }
   const want = (Array.isArray(key) ? key : [String(key)]).map(String).sort().join('|');
   const got = (Array.isArray(r) ? r : [r]).map(String).sort().join('|');
@@ -68,7 +85,7 @@ export function buildResult(cfg: ExamConfig, st: EngineState): ExamResult {
         firstVisitedAt: iso(qs.firstVisitedAt),
         lastSavedAt: iso(qs.lastSavedAt),
       };
-      if (q.answer != null) {
+      if (q.answer != null && q.type !== 'WRITTEN') {
         sectionHasKey = true;
         const { plus, minus } = marksFor(cfg, s, q);
         score.maxMarks += plus;
@@ -76,6 +93,17 @@ export function buildResult(cfg: ExamConfig, st: EngineState): ExamResult {
           out.correct = null;
           out.marksAwarded = 0;
           score.unattempted++;
+        } else if (q.type === 'MSQ' && q.msqPartialMarks) {
+          const want = q.answer as string[];
+          const got = [...new Set(Array.isArray(qs.saved) ? qs.saved : [String(qs.saved)])];
+          const correct = isCorrect(q, got);
+          const earned = got.some((option) => !want.includes(option))
+            ? -minus : q.msqPartialMarks[got.length];
+          out.correct = correct;
+          out.marksAwarded = earned;
+          score.marks += earned;
+          if (correct) score.correct++;
+          else score.incorrect++;
         } else if (partialFraction(s, q, qs.saved!) != null) {
           const frac = partialFraction(s, q, qs.saved!)!;
           const earned = Math.round(plus * frac * 1e6) / 1e6;

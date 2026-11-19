@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 
 /** MCQ = single correct (radio), MSQ = multiple correct (checkbox), TITA = type-in-the-answer (numeric keypad). */
-export type QuestionType = 'MCQ' | 'MSQ' | 'TITA';
+export type QuestionType = 'MCQ' | 'MSQ' | 'TITA' | 'WRITTEN';
 
 export interface Option {
   /** Stable id recorded in the result (e.g. "A"). */
@@ -37,10 +37,20 @@ export interface Question {
    * MCQ: "B"  |  MSQ: ["A","C"]  |  TITA: "42" (or a number)
    */
   answer?: string | number | string[];
+  /** Alternative individually accepted answers for MCQ or TITA questions. */
+  acceptedAnswers?: (string | number)[];
+  /** Inclusive accepted numerical interval, when the source specifies a range. */
+  answerRange?: [number, number];
+  /** Alternative inclusive intervals when a source accepts disjoint numerical ranges. */
+  answerRanges?: [number, number][];
   /** TITA numeric tolerance for scoring (absolute). Default 0 (string-equal after trim). */
   tolerance?: number;
   /** MSQ: the candidate cannot tick more than this many options (they must untick one first). */
   maxSelections?: number;
+  /** Marks for 0, 1, ... correct selections when no incorrect option is selected. */
+  msqPartialMarks?: number[];
+  /** Reference answer for written practice; never automatically graded. */
+  referenceAnswerHtml?: string;
 }
 
 export interface Section {

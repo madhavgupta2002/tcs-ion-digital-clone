@@ -310,6 +310,35 @@ describe('buildResult scoring', () => {
     expect(buildResult(h.cfg, h.st).sections[0].questions[2].correct).toBe(true);
   });
 
+  it('accepts either permitted MCQ answer without requiring both selections', () => {
+    const h = setup();
+    h.cfg.sections[0].questions[0].acceptedAnswers = ['C'];
+    answer(h, [{ v: ['C'] }, { v: null }, { v: null }]);
+    expect(buildResult(h.cfg, h.st).sections[0].questions[0]).toMatchObject({ correct: true, marksAwarded: 3 });
+    answer(h, [{ v: ['A'] }, { v: null }, { v: null }]);
+    expect(buildResult(h.cfg, h.st).sections[0].questions[0]).toMatchObject({ correct: false, marksAwarded: -1 });
+    answer(h, [{ v: ['B', 'C'] }, { v: null }, { v: null }]);
+    expect(buildResult(h.cfg, h.st).sections[0].questions[0].correct).toBe(false);
+  });
+
+  it('scores alternative numeric answers with the same tolerance', () => {
+    const h = setup();
+    h.cfg.sections[0].questions[2].acceptedAnswers = [8];
+    h.cfg.sections[0].questions[2].tolerance = 0.01;
+    answer(h, [{ v: null }, { v: null }, { v: '8.005' }]);
+    expect(buildResult(h.cfg, h.st).sections[0].questions[2].correct).toBe(true);
+    answer(h, [{ v: null }, { v: null }, { v: '8.1' }]);
+    expect(buildResult(h.cfg, h.st).sections[0].questions[2].correct).toBe(false);
+  });
+
+  it('rejects alternative keys for absent options, nonnumeric TITA, and MSQ', () => {
+    for (const [index, alternatives] of [[0, ['D']], [1, ['A']], [2, ['eight']]] as const) {
+      const cfg = mkConfig('global');
+      cfg.sections[0].questions[index].acceptedAnswers = [...alternatives];
+      expect(() => validateConfig(cfg)).toThrow('invalid alternative answer keys');
+    }
+  });
+
   it('answeredMarked counts as evaluated; marked without answer does not', () => {
     const h = setup();
     answer(h, [{ v: ['B'], mark: true }, { v: null, mark: true }, { v: null }]);
@@ -401,5 +430,91 @@ describe('partial MSQ scoring', () => {
     expect(award(['A'])).toBe(1);
     expect(award(['A', 'C'])).toBe(0);
     expect(award(['C'])).toBe(0);
+  });
+});
+
+describe('JEE Advanced answer formats', () => {
+  it('accepts disjoint numerical intervals without accepting the gap between them', () => {
+    const cfg = mkConfig('global');
+    const question = cfg.sections[0].questions[2];
+    question.answer = '-29.95';
+    question.answerRanges = [[-29.95, -29.8], [29.8, 29.95]];
+    expect(() => validateConfig(cfg)).not.toThrow();
+    for (const [value, correct] of [
+      ['-29.95', true], ['-29.9', true], ['29.8', true], ['29.95', true],
+      ['0', false], ['29.96', false],
+    ] as const) {
+      const state = initState(cfg);
+      state.q[0][2].saved = value;
+      state.q[0][2].status = 'answered';
+      expect(buildResult(cfg, state).sections[0].questions[2].correct).toBe(correct);
+    }
+    question.answerRanges = [[2, 1], [3, 4]];
+    expect(() => validateConfig(cfg)).toThrow(/alternative numerical ranges/);
+  });
+
+  it('awards explicit partial marks and applies the wrong-option penalty', () => {
+    const cfg = mkConfig('global');
+    const question = cfg.sections[0].questions[1];
+    question.marks = 4;
+    question.negativeMarks = 2;
+    question.msqPartialMarks = [0, 1, 4];
+    expect(() => validateConfig(cfg)).not.toThrow();
+    for (const [saved, marks] of [
+      [['A'], 1], [['A', 'C'], 4], [['A', 'B'], -2], [['B'], -2],
+    ] as const) {
+      const state = initState(cfg);
+      state.q[0][1].saved = [...saved];
+      state.q[0][1].status = 'answered';
+      expect(buildResult(cfg, state).sections[0].questions[1].marksAwarded).toBe(marks);
+    }
+    question.msqPartialMarks = [0, 1, 3];
+    expect(() => validateConfig(cfg)).toThrow(/partial marks/);
+  });
+
+  it('saves written working without including it in the automatic score', () => {
+    const cfg = mkConfig('global');
+    cfg.sections[0].questions[0] = {
+      id: 'written', type: 'WRITTEN', html: 'Prove the result.',
+      referenceAnswerHtml: '<p>Reference proof.</p>',
+    };
+    expect(() => validateConfig(cfg)).not.toThrow();
+    const state = initState(cfg);
+    state.q[0][0].saved = 'Let x = 2.\nThen ...';
+    state.q[0][0].status = 'answered';
+    const result = buildResult(cfg, state).sections[0];
+    expect(result.questions[0].response).toBe('Let x = 2.\nThen ...');
+    expect(result.questions[0].marksAwarded).toBeUndefined();
+    expect(result.score?.maxMarks).toBe(6);
+    cfg.sections[0].questions[0].answer = '2';
+    expect(() => validateConfig(cfg)).toThrow(/self reviewed/);
+  });
+});
+
+describe('inclusive numerical source ranges', () => {
+  it('accepts both endpoints and interior values, and rejects values outside the range', () => {
+    const cfg = mkConfig('global');
+    const question = cfg.sections[0].questions[2];
+    question.answer = '2.17';
+    question.answerRange = [2.17, 2.23];
+    expect(() => validateConfig(cfg)).not.toThrow();
+    for (const [value, correct] of [
+      ['2.17', true], ['2.2', true], ['2.23', true],
+      ['2.169999', false], ['2.230001', false], ['nonsense', false],
+    ] as const) {
+      const state = initState(cfg);
+      state.q[0][2].saved = value;
+      state.q[0][2].status = 'answered';
+      expect(buildResult(cfg, state).sections[0].questions[2].correct).toBe(correct);
+    }
+  });
+
+  it('rejects reversed ranges and ranges on MCQ questions', () => {
+    const cfg = mkConfig('global');
+    cfg.sections[0].questions[2].answerRange = [4, 2];
+    expect(() => validateConfig(cfg)).toThrow('invalid numerical answer range');
+    delete cfg.sections[0].questions[2].answerRange;
+    cfg.sections[0].questions[0].answerRange = [1, 2];
+    expect(() => validateConfig(cfg)).toThrow('invalid numerical answer range');
   });
 });

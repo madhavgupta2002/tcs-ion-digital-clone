@@ -11,7 +11,7 @@
   user-select: none;
   background: #fff;
 }
-.exam .q-text, .exam .passage-text, .exam .option span { user-select: text; }
+.exam .q-text, .exam .passage-text, .exam .option-content { user-select: text; }
 /* The reference was captured on Windows, where Lato renders noticeably heavier
    than on macOS/Linux. A hairline stroke closes most of that gap. */
 .sections-label, .tab, .cand-name, .legend, .palette-title, .time-left { -webkit-text-stroke: 0.25px currentColor; }
@@ -183,7 +183,8 @@
 }
 .option input { margin: 0 0 0 6px; width: 15px; height: 15px; flex: none; cursor: pointer; accent-color: #1a73e8; }
 .option p { margin: 0; }
-.option span { display: inline-flex; align-items: center; min-height: 23px; }
+.option > .option-content { display: block; min-width: 0; min-height: 23px; }
+.q-text .katex, .option-content .katex, .passage-text .katex { font-size: 1em; }
 .tita { margin-top: 30px; }
 
 /* palette show/hide handle: 21×60 at the right edge of the question area */
@@ -291,3 +292,20 @@
 .summary-q { font-size: 15px; font-weight: bold; text-align: center; margin: 22px 0 14px; }
 .summary-actions { display: flex; justify-content: center; gap: 16px; padding-bottom: 6px; }
 .summary-actions .btn { min-width: 90px; }
+.written-answer { display: grid; gap: 8px; margin-top: 18px; }
+.written-answer label { font-weight: 600; }
+.written-answer textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 180px;
+  padding: 12px;
+  border: 1px solid #9ca3af;
+  border-radius: 4px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+.written-answer p { color: #555; font-size: 13px; }
+.partial-marking { margin: 12px 0; color: #555; font-size: 13px; line-height: 1.5; }
